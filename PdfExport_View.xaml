@@ -8,11 +8,17 @@
         WindowStyle="None">
 
     <Window.Resources>
+        <!-- Gradient Background for Window Border -->
+        <LinearGradientBrush x:Key="WindowGradientBackground" StartPoint="0,0" EndPoint="0,1">
+            <GradientStop Color="#FFFFFFFF" Offset="0"/>
+            <GradientStop Color="#FFF0F0F0" Offset="1"/>
+        </LinearGradientBrush>
+
         <!-- Premium GroupBox Style -->
         <Style x:Key="PremiumGroupBoxStyle" TargetType="GroupBox">
             <Setter Property="Margin" Value="12,8"/>
             <Setter Property="Padding" Value="16,12"/>
-            <Setter Property="Background" Value="#FFFFFF"/>
+            <Setter Property="Background" Value="{StaticResource WindowGradientBackground}"/>
             <Setter Property="BorderBrush" Value="#E5E7EB"/>
             <Setter Property="BorderThickness" Value="1"/>
             <Setter Property="FontWeight" Value="SemiBold"/>
@@ -35,13 +41,13 @@
                                     <RowDefinition Height="Auto"/>
                                     <RowDefinition Height="*"/>
                                 </Grid.RowDefinitions>
-                                <Border Background="#FFFFFF" 
+                                <Border Background="{StaticResource WindowGradientBackground}" 
                                         BorderThickness="0" 
                                         Padding="4,0,8,8">
                                     <TextBlock Text="{TemplateBinding Header}" 
-                                             Foreground="#111827"
-                                             FontWeight="{TemplateBinding FontWeight}"
-                                             FontSize="{TemplateBinding FontSize}"/>
+                                               Foreground="#111827"
+                                               FontWeight="{TemplateBinding FontWeight}"
+                                               FontSize="{TemplateBinding FontSize}"/>
                                 </Border>
                                 <ContentPresenter Grid.Row="1"/>
                             </Grid>
@@ -56,23 +62,24 @@
             <Setter Property="Width" Value="130"/>
             <Setter Property="Height" Value="40"/>
             <Setter Property="Margin" Value="8,0"/>
-            <Setter Property="Background" Value="#2563EB"/>
-            <Setter Property="Foreground" Value="White"/>
             <Setter Property="FontWeight" Value="SemiBold"/>
             <Setter Property="FontSize" Value="13"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="Background" Value="#2563EB"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Cursor" Value="Hand"/>
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="Button">
-                        <Border x:Name="border" CornerRadius="6"
+                        <Border x:Name="border" 
+                                CornerRadius="6"
                                 Background="{TemplateBinding Background}">
                             <Border.Effect>
                                 <DropShadowEffect BlurRadius="10" ShadowDepth="2" 
                                                 Opacity="0.2" Color="#2563EB"/>
                             </Border.Effect>
-                            <Grid>
-                                <ContentPresenter HorizontalAlignment="Center"
-                                                VerticalAlignment="Center"/>
-                            </Grid>
+                            <ContentPresenter HorizontalAlignment="Center"
+                                              VerticalAlignment="Center"/>
                         </Border>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsMouseOver" Value="True">
@@ -92,6 +99,7 @@
             <Setter Property="Margin" Value="8,6"/>
             <Setter Property="FontSize" Value="13"/>
             <Setter Property="Padding" Value="10,2"/>
+            <Setter Property="Cursor" Value="Hand"/>
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="CheckBox">
@@ -127,7 +135,8 @@
         </Style>
     </Window.Resources>
 
-    <Border Background="#FFFFFF" CornerRadius="12" Margin="10">
+    <Border Background="{StaticResource WindowGradientBackground}" 
+            CornerRadius="12" Margin="10">
         <Border.Effect>
             <DropShadowEffect BlurRadius="20" ShadowDepth="3" 
                             Opacity="0.2" Color="#000000"/>
@@ -174,8 +183,8 @@
                             Padding="16,10" 
                             Margin="0,0,16,0">
                         <TextBlock Text="{Binding SelectedDirectoryDisplay}" 
-                                 VerticalAlignment="Center"
-                                 TextTrimming="CharacterEllipsis"/>
+                                   VerticalAlignment="Center"
+                                   TextTrimming="CharacterEllipsis"/>
                     </Border>
 
                     <Button Grid.Column="1"
@@ -190,13 +199,18 @@
                       Header="Available Sheets" 
                       Style="{StaticResource PremiumGroupBoxStyle}">
                 <ScrollViewer Margin="0,8,0,0" 
-                             VerticalScrollBarVisibility="Auto">
+                              VerticalScrollBarVisibility="Auto">
                     <ItemsControl ItemsSource="{Binding Elements}">
                         <ItemsControl.ItemTemplate>
                             <DataTemplate>
-                                <CheckBox Content="{Binding Name}"
-                                         IsChecked="{Binding IsSelected, Mode=TwoWay}"
-                                         Style="{StaticResource PremiumCheckBoxStyle}"/>
+                                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                    <CheckBox IsChecked="{Binding IsSelected, Mode=TwoWay}" 
+                                              Style="{StaticResource PremiumCheckBoxStyle}" 
+                                              VerticalAlignment="Center"/>
+                                    <TextBlock Text="{Binding Name}" 
+                                               VerticalAlignment="Center" 
+                                               Margin="8,0,0,0"/>
+                                </StackPanel>
                             </DataTemplate>
                         </ItemsControl.ItemTemplate>
                     </ItemsControl>
@@ -211,8 +225,8 @@
                 </Grid.ColumnDefinitions>
 
                 <TextBlock Text="{Binding SelectedItemsCount, StringFormat='{}{0} sheets selected'}"
-                          VerticalAlignment="Center"
-                          Foreground="#6B7280"/>
+                           VerticalAlignment="Center"
+                           Foreground="#6B7280"/>
 
                 <StackPanel Grid.Column="1" 
                             Orientation="Horizontal" 
