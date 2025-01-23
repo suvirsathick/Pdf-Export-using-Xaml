@@ -1,4 +1,4 @@
-﻿using Autodesk.Revit.UI;
+using Autodesk.Revit.UI;
 using Autodesk.Revit.DB;
 using System.Linq;
 using System.Windows;
@@ -6,16 +6,18 @@ using System.Windows.Interop;
 using MyRevitAddin.ViewModels;
 using MyRevitAddin.Views;
 using MyRevitAddin.Services;
+using Autodesk.Revit.Attributes;
 
 namespace MyRevitAddin
 {
+    [Transaction(TransactionMode.Manual)]
+    [Regeneration(RegenerationOption.Manual)]
     public class ExternalCommand : IExternalCommand
     {
         public Result Execute(ExternalCommandData commandData, ref string message, ElementSet elements)
         {
             UIApplication uiapp = commandData.Application;
             Document doc = uiapp.ActiveUIDocument.Document;
-
             // Collect sheets
             var allSheets = new FilteredElementCollector(doc)
                                 .OfClass(typeof(ViewSheet))
@@ -79,7 +81,6 @@ namespace MyRevitAddin
                 {
                     var exportService = new PDFExportService(doc);
                     bool success = exportService.ExportSheets(directory, selectedSheets);
-
                     TaskDialog.Show("PDF Export",
                         success ? "Exported Successfully" : "Export Failed");
                 }
@@ -88,7 +89,6 @@ namespace MyRevitAddin
                     TaskDialog.Show("PDF Export", "Please select sheets");
                 }
             }
-
             return Result.Succeeded;
         }
     }
