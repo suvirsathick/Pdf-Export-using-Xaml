@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
@@ -6,7 +6,6 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Windows.Input;
 using System.Windows.Forms;
-
 namespace MyRevitAddin.ViewModels
 {
     // Represents a selectable sheet or element
@@ -14,7 +13,6 @@ namespace MyRevitAddin.ViewModels
     {
         private bool _isSelected;
         public string Name { get; set; }
-
         public bool IsSelected
         {
             get => _isSelected;
@@ -27,47 +25,38 @@ namespace MyRevitAddin.ViewModels
                 }
             }
         }
-
         public event PropertyChangedEventHandler PropertyChanged;
         protected void OnPropertyChanged([CallerMemberName] string propertyName = null)
             => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
     }
-
     // Simple RelayCommand implementation
     public class RelayCommand : ICommand
     {
         private readonly Action _execute;
         private readonly Func<bool> _canExecute;
-
         public RelayCommand(Action execute, Func<bool> canExecute = null)
         {
             _execute = execute;
             _canExecute = canExecute;
         }
-
         public event EventHandler CanExecuteChanged;
-
         public bool CanExecute(object parameter)
         {
             return _canExecute == null || _canExecute();
         }
-
         public void Execute(object parameter)
         {
             _execute();
         }
-
         public void RaiseCanExecuteChanged()
         {
             CanExecuteChanged?.Invoke(this, EventArgs.Empty);
         }
     }
-
     public class DirectorySelectionViewModel : INotifyPropertyChanged
     {
         private string _selectedDirectoryDisplay = "No directory selected";
         private int _selectedItemsCount = 0;
-
         public string SelectedDirectoryDisplay
         {
             get => _selectedDirectoryDisplay;
@@ -81,7 +70,6 @@ namespace MyRevitAddin.ViewModels
                 }
             }
         }
-
         public int SelectedItemsCount
         {
             get => _selectedItemsCount;
@@ -94,7 +82,6 @@ namespace MyRevitAddin.ViewModels
                 }
             }
         }
-
         private ObservableCollection<SelectableElement> _elements = new ObservableCollection<SelectableElement>();
         public ObservableCollection<SelectableElement> Elements
         {
@@ -111,9 +98,7 @@ namespace MyRevitAddin.ViewModels
                             element.PropertyChanged -= OnElementPropertyChanged;
                         }
                     }
-
                     _elements = value;
-
                     if (_elements != null)
                     {
                         _elements.CollectionChanged += OnElementsCollectionChanged;
@@ -122,36 +107,29 @@ namespace MyRevitAddin.ViewModels
                             element.PropertyChanged += OnElementPropertyChanged;
                         }
                     }
-
                     UpdateSelectedItemsCount();
                     OnPropertyChanged();
                 }
             }
         }
-
         public RelayCommand BrowseCommand { get; }
         public RelayCommand OkCommand { get; }
         public RelayCommand CancelCommand { get; }
-
         public event EventHandler<bool> RequestClose;
         public event PropertyChangedEventHandler PropertyChanged;
-
         public DirectorySelectionViewModel()
         {
             BrowseCommand = new RelayCommand(BrowseDirectory);
             OkCommand = new RelayCommand(OnOk, CanExecuteOk);
             CancelCommand = new RelayCommand(OnCancel);
-
             Elements.CollectionChanged += OnElementsCollectionChanged;
         }
-
         private bool CanExecuteOk()
         {
             return !string.IsNullOrEmpty(_selectedDirectoryDisplay)
                    && _selectedDirectoryDisplay != "No directory selected"
                    && SelectedItemsCount > 0;
         }
-
         private void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
         {
             if (e.PropertyName == nameof(SelectableElement.IsSelected))
@@ -160,7 +138,6 @@ namespace MyRevitAddin.ViewModels
                 OkCommand.RaiseCanExecuteChanged();
             }
         }
-
         private void OnElementsCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
             if (e.NewItems != null)
@@ -170,7 +147,6 @@ namespace MyRevitAddin.ViewModels
                     element.PropertyChanged += OnElementPropertyChanged;
                 }
             }
-
             if (e.OldItems != null)
             {
                 foreach (SelectableElement element in e.OldItems)
@@ -178,16 +154,13 @@ namespace MyRevitAddin.ViewModels
                     element.PropertyChanged -= OnElementPropertyChanged;
                 }
             }
-
             UpdateSelectedItemsCount();
             OkCommand.RaiseCanExecuteChanged();
         }
-
         private void UpdateSelectedItemsCount()
         {
             SelectedItemsCount = Elements.Count(e => e.IsSelected);
         }
-
         private void BrowseDirectory()
         {
             using (var dialog = new FolderBrowserDialog
@@ -202,17 +175,14 @@ namespace MyRevitAddin.ViewModels
                 }
             }
         }
-
         private void OnOk()
         {
             RequestClose?.Invoke(this, true);
         }
-
         private void OnCancel()
         {
             RequestClose?.Invoke(this, false);
         }
-
         protected void OnPropertyChanged([CallerMemberName] string propertyName = null)
             => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
     }
